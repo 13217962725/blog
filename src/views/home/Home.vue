@@ -70,7 +70,7 @@
           </div>
           <!-- 文章信息 -->
           <div class="article-wrapper">
-            <div style="line-height:1.4">
+            <div style="line-height: 1.4">
               <router-link :to="'/articles/' + item.id">
                 {{ item.articleTitle }}
               </router-link>
@@ -78,7 +78,7 @@
             <div class="article-info">
               <!-- 是否置顶 -->
               <span v-if="item.isTop == 1">
-                <span style="color:#ff7242">
+                <span style="color: #ff7242">
                   <i class="iconfont iconzhiding" /> 置顶
                 </span>
                 <span class="separator">|</span>
@@ -95,7 +95,7 @@
               <span class="separator">|</span>
               <!-- 文章标签 -->
               <router-link
-                style="display:inline-block"
+                style="display: inline-block"
                 :to="'/tags/' + tag.id"
                 class="mr-1"
                 v-for="tag of item.tagDTOList"
@@ -127,10 +127,10 @@
                   :src="blogInfo.websiteConfig.websiteAvatar"
                 />
               </v-avatar>
-              <div style="font-size: 1.375rem;margin-top:0.625rem">
+              <div style="font-size: 1.375rem; margin-top: 0.625rem">
                 {{ blogInfo.websiteConfig.websiteAuthor }}
               </div>
-              <div style="font-size: 0.875rem;">
+              <div style="font-size: 0.875rem">
                 {{ blogInfo.websiteConfig.websiteIntro }}
               </div>
             </div>
@@ -196,7 +196,7 @@
               <v-icon size="18">mdi-bell</v-icon>
               公告
             </div>
-            <div style="font-size:0.875rem">
+            <div style="font-size: 0.875rem">
               {{ blogInfo.websiteConfig.websiteNotice }}
             </div>
           </v-card>
@@ -207,10 +207,10 @@
               网站资讯
             </div>
             <div class="web-info">
-              <div style="padding:4px 0 0">
+              <div style="padding: 4px 0 0">
                 运行时间:<span class="float-right">{{ time }}</span>
               </div>
-              <div style="padding:4px 0 0">
+              <div style="padding: 4px 0 0">
                 总访问量:<span class="float-right">
                   {{ blogInfo.viewsCount }}
                 </span>
@@ -247,11 +247,11 @@ export default {
         output: "",
         isEnd: false,
         speed: 300,
-        singleBack: false,
-        sleep: 0,
+        singleBack: true,
+        sleep: 5000,
         type: "rollback",
         backSpeed: 40,
-        sentencePause: true
+        sentencePause: false
       },
       articleList: [],
       talkList: [],
@@ -263,7 +263,7 @@ export default {
     init() {
       document.title = this.blogInfo.websiteConfig.websiteName;
       // 一言Api进行打字机循环输出效果
-      fetch("https://v1.hitokoto.cn?c=i")
+      fetch("https://v1.hitokoto.cn?c=c")
         .then(res => {
           return res.json();
         })
@@ -271,15 +271,25 @@ export default {
           this.initTyped(hitokoto);
         });
     },
+    // eslint-disable-next-line no-unused-vars
+    initTyped(input, fn, hooks) {
+      const obj = this.obj;
+      // eslint-disable-next-line no-unused-vars
+      const typed = new EasyTyper(obj, input, instance => {
+        fetch("https://v1.hitokoto.cn?c=c")
+          .then(res => {
+            return res.json();
+          })
+          .then(({ hitokoto }) => {
+            instance.input = [hitokoto];
+            instance.play();
+          });
+      });
+    },
     listHomeTalks() {
       this.axios.get("/api/home/talks").then(({ data }) => {
         this.talkList = data.data;
       });
-    },
-    initTyped(input, fn, hooks) {
-      const obj = this.obj;
-      // eslint-disable-next-line no-unused-vars
-      const typed = new EasyTyper(obj, input, fn, hooks);
     },
     scrollDown() {
       window.scrollTo({
@@ -359,16 +369,24 @@ export default {
 </script>
 
 <style lang="stylus">
-.typed-cursor
-  opacity: 1
-  animation: blink 0.7s infinite
-@keyframes blink
-  0%
-    opacity: 1
-  50%
-    opacity: 0
-  100%
-    opacity: 1
+.typed-cursor {
+  opacity: 1;
+  animation: blink 0.7s infinite;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
 </style>
 
 <style scoped>
